@@ -34,6 +34,7 @@ int main(int argc, char *const *argv)
       total_bytes_read += bytes_read;
     } while (bytes_read != 0);
 
+    close(fd);
   }
 
   ssize_t total_bytes_written;
@@ -62,3 +63,9 @@ int main(int argc, char *const *argv)
 //
 // ssize_t
 // write(int fildes, const void *buf, size_t nbyte);
+//
+// close(2)
+// #include <unistd.h>
+//
+// int
+// close(int fildes);
