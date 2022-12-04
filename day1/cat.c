@@ -8,7 +8,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-char buffer[4096];
+#define BUFFER_SIZE 4096
+char buffer[BUFFER_SIZE];
 
 int main(int argc, char *const *argv)
 {
@@ -18,7 +19,6 @@ int main(int argc, char *const *argv)
   }
 
   int i, fd;
-  ssize_t total_bytes_read = 0;
 
   for (i = 1; i < argc; i++) {
     fd = open(argv[i], O_RDONLY);
@@ -28,18 +28,24 @@ int main(int argc, char *const *argv)
     }
 
     ssize_t bytes_read = 0;
+    ssize_t bytes_written = 0;
 
     do {
-      bytes_read = read(fd, &buffer[total_bytes_read], 1024);
-      total_bytes_read += bytes_read;
-    } while (bytes_read != 0);
+        bytes_read = read(fd, buffer, BUFFER_SIZE);
+        bytes_written = write(STDOUT_FILENO, buffer, bytes_read);
+
+        if (bytes_written != bytes_read) {
+            printf("Error copying");
+        }
+
+        if (bytes_read < 0) {
+            printf("Error reading from file");
+        }
+    } while (bytes_read > 0);
 
     close(fd);
   }
 
-  ssize_t total_bytes_written;
-
-  total_bytes_written = write(STDOUT_FILENO, buffer, 4096);
 
   exit(0);
 }
